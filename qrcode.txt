@@ -1,0 +1,71 @@
+
+<h2>Profile Image:</h2>
+@if ($contact->user->image)
+    <img src="{{ asset('storage/' . $contact->user->image) }}" alt="Profile Image" style="max-width: 300px;height:30px;">
+@endif
+<h1>Card Title: {{ $contact->card->card_title }}</h1>
+<p>Name: {{ $contact->user->name }}</p>
+<p>Job Title: {{ $contact->user->job_title }}</p>
+<p>Company Name: {{ $contact->user->company_name }}</p>
+<p>Phone: {{ $contact->user->phone }}</p>
+
+<h1>Cover Photo</h1>
+@if ($contact->card->cover_photo)
+    <img src="{{ asset('storage/' . $contact->card->cover_photo) }}" alt="Cover Photo" style="max-width: 300px; height:300px;"><br>
+@endif
+<h1>Card Image</h1>
+@if ($contact->card->image)
+    <img src="{{ asset('storage/' . $contact->card->image) }}" alt="Card Image" style="max-width: 300px;">
+@endif
+
+
+<h2>Details:</h2>
+@foreach($contact->card->details as $detail)
+    <p>Title: {{ $detail->title }}</p>
+    <p>Type: {{ $detail->type }}</p>
+    <p>Value: {{ $detail->value }}</p>
+@endforeach
+
+
+<h2>Website:</h2>
+@foreach($contact->card->details as $detail)
+    @if($detail->type === 'social' && $detail->title === 'website')
+        @php
+            $url = $detail->value;
+            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                $url = "https://" . $url;
+            }
+        @endphp
+        <p>
+            <a href="{{ $url }}" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
+                    <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9q-.13 0-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
+                    <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4 4 0 0 1-.82 1H12a3 3 0 1 0 0-6z"/>
+                  </svg>
+            </a>
+        </p>
+    @endif
+@endforeach
+
+
+<h2>Phone:</h2>
+@foreach($contact->card->details as $detail)
+    @if($detail->type === 'contact' && $detail->title === 'phone')
+        <p>Phone: {{ $detail->value }}</p>
+    @endif
+@endforeach
+
+<h2>E-mail:</h2>
+@foreach($contact->card->details as $detail)
+    @if($detail->type === 'contact' && $detail->title === 'email')
+        <p>E-mail: {{ $detail->value }}</p>
+    @endif
+@endforeach
+
+
+
+
+<h2>QR Code:</h2>
+{!! $contact->qr_code_url !!}
+
+

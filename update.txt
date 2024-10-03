@@ -1,0 +1,910 @@
+<!-- resources/views/cardview/show.blade.php -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $cardData['name'] }}'s Card</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}"> <!-- Add your CSS file -->
+</head>
+<body>
+    <div class="container">
+        <h1>{{ $cardData['card_title'] }}</h1>
+        <div class="card">
+            <img src="{{ $cardData['cover_photo'] }}" alt="Cover Photo" class="card-img-top">
+            <div class="card-body">
+                <h2>{{ $cardData['name'] }}</h2>
+                <img src="{{ $cardData['image'] }}" alt="User Image" class="rounded-circle" width="100">
+                <p><strong>Job Title:</strong> {{ $cardData['job_title'] }}</p>
+                <p><strong>Company:</strong> {{ $cardData['company_name'] }}</p>
+                <p><strong>Phone:</strong> {{ $cardData['phone'] }}</p>
+                <p><strong>Preferred Name:</strong> {{ $cardData['preferred_name'] }}</p>
+                <p><strong>Pronoun:</strong> {{ $cardData['pronoun'] }}</p>
+                <h3>Contact Details</h3>
+                <ul>
+                    @foreach($cardData['card_details'] as $detail)
+                        <li>
+                            <strong>{{ $detail['title'] }}:</strong> {{ $detail[$detail['type'] === 'contact' ? 'email' : 'website'] ?? $detail['other'] }}
+                        </li>
+                    @endforeach
+                </ul>
+                <h3>QR Code</h3>
+                <img src="{{ $cardData['qr_code_image'] }}" alt="QR Code">
+                <p>Scan to access: <a href="{{ $cardData['qrcode_url'] }}">{{ $cardData['qrcode_url'] }}</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+            
+            
+            
+            
+            
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.card {
+    width: 90%;
+    max-width: 350px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+}
+
+.card-header {
+    background-size: cover;
+    background-position: center;
+    height: 100px;
+}
+
+.card-header img {
+    width: 80px;
+    height: 80px;
+    border: 3px solid #fff;
+    margin-top: 73px;
+    z-index: 1;
+    margin-right: 210px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-body h2 {
+    margin-top:56px;
+    font-size: 1.5rem; 
+    color: #000000;
+    display: flex;
+}
+
+.card-body p {
+    color: #000;
+    font-size: 0.9rem;
+    margin-top: 11px;    
+    margin-right: 187px; 
+    margin-bottom: 10px; 
+    margin-left: -12px;  
+}
+
+.card-body strong {
+    margin-left: -55px;
+}
+
+.contact-info {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    background-color: #F9F9F9;
+}
+
+.contact-item i {
+    color: #666;
+    cursor: pointer;
+}
+
+.contact-item span {
+    flex-grow: 1;
+    margin-left: 10px;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.save-btn {
+    width: 100%;
+    max-width: 200px;
+    padding: 12px;
+    background-color: #232323;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.save-btn svg {
+    margin-right: 5px; 
+    margin-left: -4px; 
+}
+
+.save-btn i {
+    margin-right: 5px;
+}
+
+
+.save-btn:hover {
+    background-color: #444;
+}
+
+
+.button-container {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+.bi.bi-share-fill {
+    margin-left: 7px;
+    margin-top: 8px;
+    height: 33px;
+    cursor: pointer;
+
+}
+
+
+.gender {
+    display: flex;
+    align-items: center; 
+    opacity: 0.6;
+    padding-left: 13px;
+    gap:4px;
+}
+
+.not-specified {
+    white-space: nowrap; 
+}
+
+.share-contact{
+    white-space: nowrap; 
+
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(209, 209, 209);
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    z-index: 1000;
+}
+
+.modal.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-content {
+    cursor: move; 
+    position: relative; 
+}
+
+.modal-content button {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+
+.card-footer {
+    background-color: #ffffff;
+    padding: 15px;
+    text-align: left;
+}
+
+.card-footer p {
+    font-size: 0.9rem;
+    color: #000000;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: flex-start; 
+    gap: 8px;
+    margin-top: 20px;
+    margin-left: 45px;
+}
+
+.social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0px; /* Optional: adds space between icons */
+}
+
+.social-icons p {
+    flex: 1 0 20%; /* Allows up to 5 items per row */
+    max-width: 20%; /* Ensures a maximum width for each item */
+    text-align: center; /* Centers the icons */
+}
+
+.social-icons i {
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+
+.social-icons i:hover {
+    color: #000;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff; 
+    padding: 30px;
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    z-index: 1000;
+}
+
+.modal.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05); 
+}
+
+.modal-content {
+    cursor: move; 
+    position: relative; 
+}
+
+.modal-content h2 {
+    margin: 0;
+    font-size: 24px; 
+    color: #333;
+}
+
+.modal-content p {
+    font-size: 16px; 
+    color: #555; 
+    margin: 10px 0 20px 0; 
+}
+
+.modal-content button {
+    margin-top: 20px;
+    padding: 14px 20px; 
+    background-color: #6200ea; 
+    color: #fff;
+    border: none;
+    border-radius: 6px; 
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition:  0.3s, transform 0.2s; 
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #3700b3; 
+    transform: scale(1.05);
+}
+
+.modal-content button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(98, 0, 234, 0.5); 
+}
+
+
+.close-icon {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    cursor: pointer;
+    color: black;
+}
+
+.share-icons {
+    display: flex;
+    gap: 10px; 
+    margin-top: 20px; 
+}
+
+.share-icons svg {
+    cursor: pointer; 
+    width: 32px; 
+    height: 32px;
+}
+
+.name-preferred {
+    display: flex; 
+    align-items: center; 
+    white-space: nowrap;
+}
+
+.save-icon{
+    border-radius: 16px; 
+    margin-right:10px;
+}
+
+.job-container {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+}
+
+.job-title {
+    font-size: 18px; 
+    text-align: center; 
+    color: #000000;
+    margin-bottom: 5px; 
+    word-wrap: break-word;
+}
+
+.company-name {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #000000;
+    word-wrap: break-word; 
+}
+
+.link-website{
+    text-decoration: none;
+    color:#000;
+}
+
+.blur {
+    filter: blur(5px);
+    transition: filter 0.3s ease;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px); 
+    display: none; 
+    z-index: 999; 
+}
+
+@media screen and (max-width: 768px) {
+    .card-body h2 {
+        font-size: 1.2rem;
+    }
+    .card-body p, .contact-item span, .card-footer p {
+        font-size: 0.8rem;
+    }
+    .save-btn {
+        max-width: 150px;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .card {
+        width: 100%;
+        max-width: 320px; 
+    }
+    .card-header img {
+        width: 70px;
+        height: 70px;
+    }
+    .social-icons i {
+        font-size: 18px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header" style="background-image: url('{{ asset('storage/' . $contact->card->cover_photo) }}'); ">
+
+            @if ($contact->card->image)
+            <img src="{{ asset('storage/' . $contact->card->image) }}" alt="Card Image" style="max-width: 300px;">
+        @endif
+        
+        </div>
+        <div class="card-body">
+            <h2>{{ $contact->user->name }}</h2>
+            <p class="gender">
+                <span class="not-specified">
+                    {{ $contact->card->pronoun ?? 'Not specified' }}
+                </span>
+                
+                <span class="name-preferred">|  </span>
+                <span class="name-preferred">{{ $contact->card->preferred_name ?? 'Not specified' }}</span>
+                
+                @if(!empty($contact->card->preferred_name))
+                    <span class="name-preferred">Preferred</span>
+                @endif
+            </p>
+            
+            
+            
+            <div class="job-container">
+                <div class="job-title">{{ $contact->user->job_title }} at</div>
+                <div class="company-name">{{ $contact->user->company_name }}</div>
+            </div>
+                   
+            <div class="contact-info">
+                @foreach($contact->card->details as $detail)
+                    @if($detail->type === 'contact' && $detail->title === 'phone')
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <path d="M20.2222 13.0001C20.2218 11.0847 19.4608 9.24794 18.1065 7.89359C16.7521 6.53925 14.9153 5.77821 13 5.77783V7.22228C14.1426 7.22254 15.2595 7.56146 16.2096 8.19622C17.1597 8.83098 17.9003 9.7331 18.3379 10.7886C18.6284 11.4897 18.7778 12.2412 18.7778 13.0001H20.2222ZM5.77777 11.5556V7.9445C5.77777 7.75295 5.85386 7.56925 5.9893 7.43381C6.12475 7.29837 6.30845 7.22228 6.49999 7.22228H10.1111C10.3026 7.22228 10.4863 7.29837 10.6218 7.43381C10.7572 7.56925 10.8333 7.75295 10.8333 7.9445V10.8334C10.8333 11.0249 10.7572 11.2086 10.6218 11.3441C10.4863 11.4795 10.3026 11.5556 10.1111 11.5556H8.66666C8.66666 13.088 9.27539 14.5576 10.3589 15.6411C11.4425 16.7247 12.9121 17.3334 14.4444 17.3334V15.8889C14.4444 15.6974 14.5205 15.5137 14.656 15.3783C14.7914 15.2428 14.9751 15.1667 15.1667 15.1667H18.0555C18.2471 15.1667 18.4308 15.2428 18.5662 15.3783C18.7017 15.5137 18.7778 15.6974 18.7778 15.8889V19.5001C18.7778 19.6916 18.7017 19.8753 18.5662 20.0107C18.4308 20.1462 18.2471 20.2223 18.0555 20.2223H14.4444C9.65827 20.2223 5.77777 16.3418 5.77777 11.5556Z" fill="white"/>
+                                <path d="M17.0033 11.3419C17.2213 11.8675 17.3334 12.431 17.3333 13.0001H16.0333C16.0334 12.6017 15.955 12.2072 15.8026 11.8392C15.6502 11.4711 15.4268 11.1367 15.1451 10.855C14.8634 10.5733 14.529 10.3499 14.1609 10.1975C13.7929 10.045 13.3984 9.96665 13 9.96675V8.66675C13.857 8.66679 14.6948 8.92097 15.4074 9.39713C16.1199 9.8733 16.6753 10.5501 17.0033 11.3419Z" fill="white"/>
+                                </svg>
+                                
+                            <span>{{ $detail->value }}</span>
+                            <a href="tel:{{ $detail->value }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>
+                                    
+                            </a>
+                        </div>
+                    @endif
+            
+                    @if($detail->type === 'contact' && $detail->title === 'email')
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <g clip-path="url(#clip0_417_1193)">
+                                <path d="M20.2845 12.477V8.21837C20.2845 7.43762 19.6457 6.79883 18.865 6.79883H7.50865C6.7279 6.79883 6.09621 7.43762 6.09621 8.21837L6.08911 16.7356C6.08911 17.5164 6.7279 18.1551 7.50865 18.1551H15.3161V14.6063C15.3161 13.4281 16.2672 12.477 17.4454 12.477H20.2845ZM13.1868 13.1868L7.50865 9.63791V8.21837L13.1868 11.7672L18.865 8.21837V9.63791L13.1868 13.1868Z" fill="white"/>
+                                <path d="M20.2845 15.3161V18.1552C20.2845 18.9359 19.6457 19.5747 18.865 19.5747C18.0842 19.5747 17.4454 18.9359 17.4454 18.1552V14.9612C17.4454 14.7625 17.6016 14.6063 17.8003 14.6063C17.999 14.6063 18.1552 14.7625 18.1552 14.9612V18.1552H19.5747V14.9612C19.5747 14.4906 19.3878 14.0393 19.055 13.7065C18.7222 13.3737 18.2709 13.1868 17.8003 13.1868C17.3297 13.1868 16.8784 13.3737 16.5456 13.7065C16.2128 14.0393 16.0259 14.4906 16.0259 14.9612V18.1552C16.0259 19.7238 17.2964 20.9942 18.865 20.9942C20.4336 20.9942 21.704 19.7238 21.704 18.1552V15.3161H20.2845Z" fill="white"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_417_1193">
+                                <rect width="17.0345" height="17.0345" fill="white" transform="translate(5.37933 5.37927)"/>
+                                </clipPath>
+                                </defs>
+                                </svg>
+                                
+                            <span>{{ $detail->value }}</span>
+                            <a href="mailto:{{ $detail->value }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>
+                            </a>
+                        </div>
+                    @endif
+            
+                    @if($detail->type === 'social' && $detail->title === 'website')
+                        @php
+                            $url = $detail->value;
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                                $url = "https://" . $url;
+                            }
+                        @endphp
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <path d="M13 20.1864C11.5787 20.1864 10.1893 19.7649 9.00746 18.9753C7.82566 18.1856 6.90456 17.0633 6.36064 15.7501C5.81671 14.437 5.6744 12.992 5.95169 11.598C6.22898 10.2039 6.91342 8.92345 7.91846 7.91841C8.9235 6.91337 10.204 6.22893 11.598 5.95164C12.9921 5.67435 14.437 5.81667 15.7501 6.36059C17.0633 6.90451 18.1857 7.82561 18.9753 9.00742C19.765 10.1892 20.1864 11.5786 20.1864 13C20.1843 14.9053 19.4265 16.732 18.0793 18.0792C16.732 19.4265 14.9053 20.1843 13 20.1864ZM13 7.74324C12.4117 8.43184 11.9521 9.22073 11.6433 10.0722H14.3595C14.1837 9.59071 13.9608 9.12778 13.694 8.69012C13.4888 8.35619 13.2567 8.03953 13 7.74324ZM11.2374 11.6692C11.1056 12.5515 11.1056 13.4485 11.2374 14.3308H14.764C14.8958 13.4485 14.8958 12.5515 14.764 11.6692H11.2374ZM7.41058 13C7.41057 13.4485 7.46487 13.8953 7.57228 14.3308H9.62307C9.51215 13.4471 9.51215 12.5529 9.62307 11.6692H7.57228C7.46487 12.1046 7.41057 12.5515 7.41058 13ZM13 18.2567C13.5884 17.5681 14.048 16.7792 14.3568 15.9278H11.6419C11.8177 16.4092 12.0406 16.8722 12.3073 17.3098C12.5122 17.6437 12.7438 17.9604 13 18.2567ZM16.3756 14.3308H18.4264C18.6421 13.4567 18.6421 12.5433 18.4264 11.6692H16.377C16.4879 12.5529 16.4879 13.4471 16.377 14.3308H16.3756ZM17.7577 15.9278H16.0416C15.8018 16.7327 15.4549 17.5017 15.0102 18.2141C16.1509 17.7714 17.1159 16.9687 17.759 15.9278H17.7577ZM10.9898 18.2141C10.5451 17.5017 10.1982 16.7327 9.95844 15.9278H8.24102C8.88412 16.9687 9.8492 17.7714 10.9898 18.2141ZM8.24102 10.0722H9.95844C10.1982 9.26728 10.5451 8.49827 10.9898 7.78583C9.8492 8.22857 8.88412 9.03128 8.24102 10.0722ZM15.0102 7.78583C15.4549 8.49827 15.8018 9.26728 16.0416 10.0722H17.759C17.1159 9.03128 16.1509 8.22857 15.0102 7.78583Z" fill="white"/>
+                                </svg>
+                                
+                            <span>
+                                <a href="{{ $url }}" target="_blank" class="link-website">{{ $url }}</a>
+                            </span>
+                            <a href="{{ $url }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>          
+                            </a>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+   
+        </div>
+
+        <div class="button-container">
+            <a class="save-btn" href="{{ route('download.contact', ['user' => $contact->user->id]) }}" download="contact.vcf">
+                <img src="{{ asset('image/download.png') }}" class="save-icon">
+                Save Contact
+            </a>
+
+            <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="bi bi-share-fill" viewBox="0 0 16 16" onclick="openShareModal()">
+                <circle cx="19.5" cy="19.5" r="19.5" fill="#232323"/>
+                <path d="M23.5345 30.2586C22.6939 30.2586 21.9795 29.9644 21.3911 29.3761C20.8028 28.7877 20.5086 28.0732 20.5086 27.2327C20.5086 27.1151 20.517 26.993 20.5338 26.8666C20.5506 26.7402 20.5758 26.6269 20.6095 26.5267L13.4987 22.3914C13.2129 22.6435 12.8935 22.8412 12.5405 22.9844C12.1875 23.1276 11.8177 23.1989 11.431 23.1982C10.5905 23.1982 9.87606 22.9041 9.28769 22.3157C8.69933 21.7273 8.40515 21.0129 8.40515 20.1724C8.40515 19.3319 8.69933 18.6174 9.28769 18.0291C9.87606 17.4407 10.5905 17.1465 11.431 17.1465C11.8177 17.1465 12.1875 17.2181 12.5405 17.3614C12.8935 17.5046 13.2129 17.7019 13.4987 17.9534L20.6095 13.8181C20.5758 13.7172 20.5506 13.6039 20.5338 13.4782C20.517 13.3524 20.5086 13.2304 20.5086 13.112C20.5086 12.2715 20.8028 11.5571 21.3911 10.9687C21.9795 10.3804 22.6939 10.0862 23.5345 10.0862C24.375 10.0862 25.0894 10.3804 25.6778 10.9687C26.2661 11.5571 26.5603 12.2715 26.5603 13.112C26.5603 13.9526 26.2661 14.667 25.6778 15.2554C25.0894 15.8437 24.375 16.1379 23.5345 16.1379C23.1478 16.1379 22.778 16.0666 22.425 15.9241C22.072 15.7815 21.7526 15.5838 21.4668 15.331L14.356 19.4664C14.3896 19.5672 14.4149 19.6809 14.4317 19.8073C14.4485 19.9337 14.4569 20.0554 14.4569 20.1724C14.4569 20.2894 14.4485 20.4114 14.4317 20.5385C14.4149 20.6656 14.3896 20.7789 14.356 20.8784L21.4668 25.0138C21.7526 24.7616 22.072 24.5643 22.425 24.4217C22.778 24.2792 23.1478 24.2075 23.5345 24.2069C24.375 24.2069 25.0894 24.5011 25.6778 25.0894C26.2661 25.6778 26.5603 26.3922 26.5603 27.2327C26.5603 28.0732 26.2661 28.7877 25.6778 29.3761C25.0894 29.9644 24.375 30.2586 23.5345 30.2586Z" fill="white"/>
+                </svg>
+                
+            
+        </div>
+        
+ <div id="overlay" class="overlay" style="display:none;"></div>
+<div id="shareModal" class="modal" style="display:none;">
+    <div class="modal-content" id="modalContent" onmousedown="startDrag(event)">
+        <h2 class="share-contact">Share Contact</h2>
+        <div class="share-icons">
+            {{-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16" onclick="shareOn('instagram')">
+                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+              </svg> --}}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16" onclick="shareOn('twitter')">
+                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+              </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16" onclick="shareOn('linkedin')">
+                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16" onclick="shareOn('facebook')">
+                <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+            </svg>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle close-icon" viewBox="0 0 16 16" onclick="closeModal()">
+            <path fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm3.354 10.646a.5.5 0 0 1-.708 0L8 9.414l-2.646 2.646a.5.5 0 1 1-.708-.708L7.293 8l-2.646-2.646a.5.5 0 1 1 .708-.708L8 6.586l2.646-2.646a.5.5 0 1 1 .708.708L8.707 8l2.646 2.646a.5.5 0 0 1 0 .708z"/>
+        </svg>
+    </div>
+</div>
+
+    <script>
+       function openShareModal() {
+    const modal = document.getElementById('shareModal');
+    const overlay = document.getElementById('overlay');
+    modal.style.display = 'block';
+    overlay.style.display = 'block'; 
+    modal.classList.add('show');
+}
+
+function closeModal() {
+    const modal = document.getElementById('shareModal');
+    const overlay = document.getElementById('overlay');
+    modal.classList.remove('show');
+    overlay.style.display = 'none'; 
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+      
+function shareOn(platform) {
+    const contactName = "{{ $contact->user->name }}";
+    const jobTitle = "{{ $contact->user->job_title }}";
+    const companyName = "{{ $contact->user->company_name }}";
+    const shareText = `${contactName}, ${jobTitle} at ${companyName}\nCheck out this profile card!`;
+    const url = window.location.href; 
+
+    if (platform === 'linkedin') {
+        const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(shareText)}`;
+        window.open(linkedinUrl, '_blank');
+    } else if (platform === 'facebook') {
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(facebookUrl, '_blank');
+    } else if (platform === 'twitter') {
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+        window.open(twitterUrl, '_blank');
+    }
+
+    closeModal(); 
+}
+ 
+        let isDragging = false;
+        let offset = { x: 0, y: 0 };
+        
+        function startDrag(e) {
+            isDragging = true;
+            offset.x = e.clientX - e.target.getBoundingClientRect().left;
+            offset.y = e.clientY - e.target.getBoundingClientRect().top;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        
+        function drag(e) {
+            if (isDragging) {
+                const modal = document.getElementById('shareModal');
+                modal.style.left = `${e.clientX - offset.x}px`;
+                modal.style.top = `${e.clientY - offset.y}px`;
+                modal.style.position = 'absolute';
+            }
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+        </script>
+
+        <div class="card-footer">
+            <p>Let's Get Social</p>
+            
+                <div class="social-icons">  
+                    @foreach($contact->card->details as $detail)
+                    @if($detail->type === 'social' && $detail->title === 'social-link')
+                        @php
+                            $url = $detail->value;
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                                $url = "https://" . $url;
+                            }
+                        @endphp
+                        <p>
+                            <a href="{{ $url }}" target="_blank">
+                                @if (strpos($url, 'facebook.com') !== false)
+                                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 10C1 5.02944 5.02944 1 10 1H40C44.9706 1 49 5.02944 49 10V40C49 44.9706 44.9706 49 40 49H10C5.02944 49 1 44.9706 1 40V10Z" stroke="#232323" stroke-width="2"/>
+                                        <path d="M21.021 15.7975V19.9195H18V24.9595H21.021V39.9385H27.222V24.961H31.3845C31.3845 24.961 31.7745 22.5445 31.9635 19.9015H27.2475V16.4545C27.2475 15.94 27.9225 15.247 28.5915 15.247H31.9725V10H27.3765C20.8665 10 21.021 15.0445 21.021 15.7975Z" fill="black"/>
+                                    </svg>
+                                @elseif (strpos($url, 'instagram.com') !== false)
+                                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 10C1 5.02944 5.02944 1 10 1H40C44.9706 1 49 5.02944 49 10V40C49 44.9706 44.9706 49 40 49H10C5.02944 49 1 44.9706 1 40V10Z" stroke="#232323" stroke-width="2"/>
+                                        <path d="M18.7 10H31.3C36.1 10 40 13.9 40 18.7V31.3C40 33.6074 39.0834 35.8203 37.4518 37.4518C35.8203 39.0834 33.6074 40 31.3 40H18.7C13.9 40 10 36.1 10 31.3V18.7C10 16.3926 10.9166 14.1797 12.5482 12.5482C14.1797 10.9166 16.3926 10 18.7 10ZM18.4 13C16.9678 13 15.5943 13.5689 14.5816 14.5816C13.5689 15.5943 13 16.9678 13 18.4V31.6C13 34.585 15.415 37 18.4 37H31.6C33.0322 37 34.4057 36.4311 35.4184 35.4184C36.4311 34.4057 37 33.0322 37 31.6V18.4C37 15.415 34.585 13 31.6 13H18.4ZM32.875 15.25C33.3723 15.25 33.8492 15.4475 34.2008 15.7992C34.5525 16.1508 34.75 16.6277 34.75 17.125C34.75 17.6223 34.5525 18.0992 34.2008 18.4508C33.8492 18.8025 33.3723 19 32.875 19C32.3777 19 31.9008 18.8025 31.5492 18.4508C31.1975 18.0992 31 17.6223 31 17.125C31 16.6277 31.1975 16.1508 31.5492 15.7992C31.9008 15.4475 32.3777 15.25 32.875 15.25ZM25 17.5C26.9891 17.5 28.8968 18.2902 30.3033 19.6967C31.7098 21.1032 32.5 23.0109 32.5 25C32.5 26.9891 31.7098 28.8968 30.3033 30.3033C28.8968 31.7098 26.9891 32.5 25 32.5C23.0109 32.5 21.1032 31.7098 19.6967 30.3033C18.2902 28.8968 17.5 26.9891 17.5 25C17.5 23.0109 18.2902 21.1032 19.6967 19.6967C21.1032 18.2902 23.0109 17.5 25 17.5ZM25 20.5C23.8065 20.5 22.6619 20.9741 21.818 21.818C20.9741 22.6619 20.5 23.8065 20.5 25C20.5 26.1935 20.9741 27.3381 21.818 28.182C22.6619 29.0259 23.8065 29.5 25 29.5C26.1935 29.5 27.3381 29.0259 28.182 28.182C29.0259 27.3381 29.5 26.1935 29.5 25C29.5 23.8065 29.0259 22.6619 28.182 21.818C27.3381 20.9741 26.1935 20.5 25 20.5Z" fill="black"/>
+                                        </svg>
+                                @elseif (strpos($url, 'linkedin.com') !== false)
+                                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 10C1 5.02944 5.02944 1 10 1H40C44.9706 1 49 5.02944 49 10V40C49 44.9706 44.9706 49 40 49H10C5.02944 49 1 44.9706 1 40V10Z" stroke="#232323" stroke-width="2"/>
+                                        <g clip-path="url(#clip0_417_1213)">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0341 15.0614C16.5727 14.4871 16.8689 13.72 16.8627 12.9229C16.8349 12.1491 16.5224 11.4156 15.9891 10.8723C15.4558 10.329 14.7421 10.017 13.9938 10C13.2432 10.0166 12.5268 10.3279 11.9899 10.8706C11.4529 11.4134 11.1355 12.147 11.1021 12.9229C11.1127 13.7192 11.4188 14.4809 11.957 15.0505C12.4952 15.62 13.2244 15.9538 13.9938 15.9829C14.7643 15.9641 15.497 15.6333 16.0341 15.0614ZM13.4593 19.9214C12.2434 19.8936 11.4148 19.8743 11.4148 21.4129V38.5386C11.4148 40.045 12.2061 40.015 13.3454 39.97C13.5526 39.9614 13.7701 39.9529 13.9958 39.9529C14.2237 39.9529 14.4412 39.9614 14.6463 39.97C15.7814 40.0129 16.5561 40.045 16.5561 38.5386V21.415C16.5561 19.8764 15.7441 19.8936 14.5344 19.9236C14.1761 19.9321 13.8176 19.9299 13.4593 19.9214ZM21.9191 19.9536C21.3681 20.0671 21.0138 20.4314 21.0138 21.4129V38.5386C21.0138 40.045 21.7741 40.015 22.9154 39.97C23.1226 39.9614 23.3442 39.9529 23.5741 39.9529C23.8061 39.9529 24.0257 39.9614 24.2349 39.97C25.3825 40.0129 26.1572 40.045 26.1572 38.5386V29.4057C26.113 28.9389 26.1653 28.4677 26.3104 28.0233C26.4556 27.5789 26.6904 27.1715 26.9992 26.8281C27.3081 26.4847 27.684 26.213 28.102 26.0313C28.52 25.8495 28.9705 25.7616 29.4238 25.7736C29.8793 25.7454 30.3353 25.819 30.7609 25.9894C31.1864 26.1598 31.5714 26.423 31.8898 26.7611C32.2082 27.0992 32.4525 27.5043 32.606 27.9488C32.7596 28.3934 32.8187 28.8669 32.7796 29.3371V38.4679C32.7796 39.9764 33.5377 39.9464 34.6791 39.9014C34.8862 39.8929 35.1078 39.8843 35.3378 39.8843C35.5698 39.8843 35.7893 39.8929 35.9986 39.9014C37.1399 39.9443 37.8981 39.9764 37.8981 38.47V26.7786C37.9405 25.8187 37.7872 24.8603 37.448 23.9658C37.1088 23.0712 36.5915 22.2605 35.9295 21.5865C35.2675 20.9124 34.4758 20.39 33.6059 20.0533C32.7359 19.7166 31.8072 19.5731 30.8801 19.6321C29.9358 19.5433 28.9853 19.7066 28.1196 20.1066C27.2538 20.5066 26.5018 21.1297 25.9355 21.9164C25.9583 21.0721 25.6932 19.9536 25.0324 19.9536C24.8418 19.9536 24.5498 19.9429 24.2183 19.9321C23.3898 19.9064 22.3126 19.8721 21.9191 19.9536Z" fill="black"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_417_1213">
+                                        <rect width="29" height="30" fill="white" transform="translate(10 10)"/>
+                                        </clipPath>
+                                        </defs>
+                                        </svg>
+                                        @elseif (strpos($url, 'twitter.com') !== false)
+                                    <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 10C1 5.02944 5.02944 1 10 1H40C44.9706 1 49 5.02944 49 10V40C49 44.9706 44.9706 49 40 49H10C5.02944 49 1 44.9706 1 40V10Z" stroke="#232323" stroke-width="2"/>
+                                        <g clip-path="url(#clip0_417_1221)">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M35.8065 13.9885C35.9326 13.8402 36.029 13.6677 36.0904 13.4811C36.1517 13.2944 36.1767 13.0971 36.1639 12.9005C36.1511 12.7039 36.1008 12.5118 36.0158 12.3352C35.9308 12.1586 35.8129 12.001 35.6686 11.8712C35.5244 11.7415 35.3568 11.6423 35.1753 11.5792C34.9938 11.5162 34.802 11.4905 34.6109 11.5036C34.4197 11.5168 34.233 11.5685 34.0613 11.6559C33.8896 11.7433 33.7363 11.8647 33.6102 12.013L26.1581 20.773L19.8333 12.1C19.6975 11.9137 19.5214 11.7625 19.3189 11.6584C19.1164 11.5542 18.8931 11.5 18.6667 11.5H12.8333C12.5625 11.5 12.297 11.5776 12.0666 11.724C11.8363 11.8705 11.6501 12.08 11.529 12.3292C11.4078 12.5783 11.3566 12.8573 11.3809 13.1347C11.4052 13.4122 11.5042 13.6771 11.6667 13.9L21.054 26.773L13.1935 36.013C13.0674 36.1613 12.971 36.3338 12.9096 36.5204C12.8483 36.7071 12.8233 36.9044 12.8361 37.101C12.8489 37.2976 12.8992 37.4897 12.9842 37.6663C13.0692 37.8429 13.1871 38.0005 13.3314 38.1302C13.4756 38.26 13.6432 38.3592 13.8247 38.4223C14.0062 38.4853 14.198 38.511 14.3891 38.4979C14.5803 38.4847 14.767 38.4329 14.9387 38.3456C15.1104 38.2582 15.2637 38.1368 15.3898 37.9885L22.8419 29.227L29.1667 37.9C29.3025 38.0863 29.4787 38.2375 29.6811 38.3416C29.8836 38.4458 30.1069 38.5 30.3333 38.5H36.1667C36.4375 38.5 36.703 38.4224 36.9334 38.276C37.1637 38.1295 37.3499 37.92 37.471 37.6708C37.5922 37.4217 37.6434 37.1427 37.6191 36.8653C37.5948 36.5878 37.4958 36.3229 37.3333 36.1L27.946 23.227L35.8065 13.9885ZM31.0625 35.5L15.75 14.5H17.9375L33.25 35.5H31.0625Z" fill="black"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_417_1221">
+                                        <rect width="35" height="36" fill="white" transform="translate(7 7)"/>
+                                        </clipPath>
+                                        </defs>
+                                        </svg>
+                                @endif
+                            </a>
+                        </p>
+                    @endif
+                @endforeach
+                </div>
+
+                
+                
+            </div>
+        </div>
+        <br>
+
+       
+    
+
+            {{-- <h2 style="margin-left:16px;margin-right:10px;">QR Code:</h2>
+            {!! $contact->qr_code_url !!} --}}
+</body>
+</html>
+            
+            
+            
+            
+ <><><><><><           
+ @foreach($cardData['card_details'] as $detail)
+                        @if($detail['type'] === 'contact')
+                            <div class="contact-item">
+                                @if($detail['title'] === 'phone')
+                                    <svg ...>...</svg> <!-- Phone Icon SVG -->
+                                    <span>{{ $detail['value'] }}</span>
+                                    <a href="tel:{{ $detail['value'] }}" target="_blank">Call</a>
+                                @elseif($detail['title'] === 'email')
+                                    <svg ...>...</svg> <!-- Email Icon SVG -->
+                                    <span>{{ $detail['value'] }}</span>
+                                    <a href="mailto:{{ $detail['value'] }}" target="_blank">Email</a>
+                                @endif
+                            </div>
+                        @elseif($detail['type'] === 'social' && $detail['title'] === 'website')
+                            @php
+                                $url = $detail['value'];
+                                if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                                    $url = "https://" . $url;
+                                }
+                            @endphp
+                            <div class="contact-item">
+                                <svg ...>...</svg> <!-- Website Icon SVG -->
+                                <span>
+                                    <a href="{{ $url }}" target="_blank" class="link-website">{{ $url }}</a>
+                                </span>
+                                <a href="{{ $url }}" target="_blank">Visit</a>
+                            </div>
+                        @endif
+                    @endforeach
+                    <><><><><><>
+                    @foreach($contact->card->details as $detail)
+                    @if($detail->type === 'contact' && $detail->title === 'phone')
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <path d="M20.2222 13.0001C20.2218 11.0847 19.4608 9.24794 18.1065 7.89359C16.7521 6.53925 14.9153 5.77821 13 5.77783V7.22228C14.1426 7.22254 15.2595 7.56146 16.2096 8.19622C17.1597 8.83098 17.9003 9.7331 18.3379 10.7886C18.6284 11.4897 18.7778 12.2412 18.7778 13.0001H20.2222ZM5.77777 11.5556V7.9445C5.77777 7.75295 5.85386 7.56925 5.9893 7.43381C6.12475 7.29837 6.30845 7.22228 6.49999 7.22228H10.1111C10.3026 7.22228 10.4863 7.29837 10.6218 7.43381C10.7572 7.56925 10.8333 7.75295 10.8333 7.9445V10.8334C10.8333 11.0249 10.7572 11.2086 10.6218 11.3441C10.4863 11.4795 10.3026 11.5556 10.1111 11.5556H8.66666C8.66666 13.088 9.27539 14.5576 10.3589 15.6411C11.4425 16.7247 12.9121 17.3334 14.4444 17.3334V15.8889C14.4444 15.6974 14.5205 15.5137 14.656 15.3783C14.7914 15.2428 14.9751 15.1667 15.1667 15.1667H18.0555C18.2471 15.1667 18.4308 15.2428 18.5662 15.3783C18.7017 15.5137 18.7778 15.6974 18.7778 15.8889V19.5001C18.7778 19.6916 18.7017 19.8753 18.5662 20.0107C18.4308 20.1462 18.2471 20.2223 18.0555 20.2223H14.4444C9.65827 20.2223 5.77777 16.3418 5.77777 11.5556Z" fill="white"/>
+                                <path d="M17.0033 11.3419C17.2213 11.8675 17.3334 12.431 17.3333 13.0001H16.0333C16.0334 12.6017 15.955 12.2072 15.8026 11.8392C15.6502 11.4711 15.4268 11.1367 15.1451 10.855C14.8634 10.5733 14.529 10.3499 14.1609 10.1975C13.7929 10.045 13.3984 9.96665 13 9.96675V8.66675C13.857 8.66679 14.6948 8.92097 15.4074 9.39713C16.1199 9.8733 16.6753 10.5501 17.0033 11.3419Z" fill="white"/>
+                                </svg>
+                                
+                            <span>{{ $detail->value }}</span>
+                            <a href="tel:{{ $detail->value }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>
+                                    
+                            </a>
+                        </div>
+                    @endif
+            
+                    @if($detail->type === 'contact' && $detail->title === 'email')
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <g clip-path="url(#clip0_417_1193)">
+                                <path d="M20.2845 12.477V8.21837C20.2845 7.43762 19.6457 6.79883 18.865 6.79883H7.50865C6.7279 6.79883 6.09621 7.43762 6.09621 8.21837L6.08911 16.7356C6.08911 17.5164 6.7279 18.1551 7.50865 18.1551H15.3161V14.6063C15.3161 13.4281 16.2672 12.477 17.4454 12.477H20.2845ZM13.1868 13.1868L7.50865 9.63791V8.21837L13.1868 11.7672L18.865 8.21837V9.63791L13.1868 13.1868Z" fill="white"/>
+                                <path d="M20.2845 15.3161V18.1552C20.2845 18.9359 19.6457 19.5747 18.865 19.5747C18.0842 19.5747 17.4454 18.9359 17.4454 18.1552V14.9612C17.4454 14.7625 17.6016 14.6063 17.8003 14.6063C17.999 14.6063 18.1552 14.7625 18.1552 14.9612V18.1552H19.5747V14.9612C19.5747 14.4906 19.3878 14.0393 19.055 13.7065C18.7222 13.3737 18.2709 13.1868 17.8003 13.1868C17.3297 13.1868 16.8784 13.3737 16.5456 13.7065C16.2128 14.0393 16.0259 14.4906 16.0259 14.9612V18.1552C16.0259 19.7238 17.2964 20.9942 18.865 20.9942C20.4336 20.9942 21.704 19.7238 21.704 18.1552V15.3161H20.2845Z" fill="white"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_417_1193">
+                                <rect width="17.0345" height="17.0345" fill="white" transform="translate(5.37933 5.37927)"/>
+                                </clipPath>
+                                </defs>
+                                </svg>
+                                
+                            <span>{{ $detail->value }}</span>
+                            <a href="mailto:{{ $detail->value }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>
+                            </a>
+                        </div>
+                    @endif
+            
+                    @if($detail->type === 'social' && $detail->title === 'website')
+                        @php
+                            $url = $detail->value;
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                                $url = "https://" . $url;
+                            }
+                        @endphp
+                        <div class="contact-item">
+                            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="26" height="26" rx="5" fill="black"/>
+                                <path d="M13 20.1864C11.5787 20.1864 10.1893 19.7649 9.00746 18.9753C7.82566 18.1856 6.90456 17.0633 6.36064 15.7501C5.81671 14.437 5.6744 12.992 5.95169 11.598C6.22898 10.2039 6.91342 8.92345 7.91846 7.91841C8.9235 6.91337 10.204 6.22893 11.598 5.95164C12.9921 5.67435 14.437 5.81667 15.7501 6.36059C17.0633 6.90451 18.1857 7.82561 18.9753 9.00742C19.765 10.1892 20.1864 11.5786 20.1864 13C20.1843 14.9053 19.4265 16.732 18.0793 18.0792C16.732 19.4265 14.9053 20.1843 13 20.1864ZM13 7.74324C12.4117 8.43184 11.9521 9.22073 11.6433 10.0722H14.3595C14.1837 9.59071 13.9608 9.12778 13.694 8.69012C13.4888 8.35619 13.2567 8.03953 13 7.74324ZM11.2374 11.6692C11.1056 12.5515 11.1056 13.4485 11.2374 14.3308H14.764C14.8958 13.4485 14.8958 12.5515 14.764 11.6692H11.2374ZM7.41058 13C7.41057 13.4485 7.46487 13.8953 7.57228 14.3308H9.62307C9.51215 13.4471 9.51215 12.5529 9.62307 11.6692H7.57228C7.46487 12.1046 7.41057 12.5515 7.41058 13ZM13 18.2567C13.5884 17.5681 14.048 16.7792 14.3568 15.9278H11.6419C11.8177 16.4092 12.0406 16.8722 12.3073 17.3098C12.5122 17.6437 12.7438 17.9604 13 18.2567ZM16.3756 14.3308H18.4264C18.6421 13.4567 18.6421 12.5433 18.4264 11.6692H16.377C16.4879 12.5529 16.4879 13.4471 16.377 14.3308H16.3756ZM17.7577 15.9278H16.0416C15.8018 16.7327 15.4549 17.5017 15.0102 18.2141C16.1509 17.7714 17.1159 16.9687 17.759 15.9278H17.7577ZM10.9898 18.2141C10.5451 17.5017 10.1982 16.7327 9.95844 15.9278H8.24102C8.88412 16.9687 9.8492 17.7714 10.9898 18.2141ZM8.24102 10.0722H9.95844C10.1982 9.26728 10.5451 8.49827 10.9898 7.78583C9.8492 8.22857 8.88412 9.03128 8.24102 10.0722ZM15.0102 7.78583C15.4549 8.49827 15.8018 9.26728 16.0416 10.0722H17.759C17.1159 9.03128 16.1509 8.22857 15.0102 7.78583Z" fill="white"/>
+                                </svg>
+                                
+                            <span>
+                                <a href="{{ $url }}" target="_blank" class="link-website">{{ $url }}</a>
+                            </span>
+                            <a href="{{ $url }}" target="_blank">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_417_1175)">
+                                    <path d="M11 6C11.2652 6 11.5196 6.10536 11.7071 6.29289C11.8946 6.48043 12 6.73478 12 7C12 7.26522 11.8946 7.51957 11.7071 7.70711C11.5196 7.89464 11.2652 8 11 8H5V19H16V13C16 12.7348 16.1054 12.4804 16.2929 12.2929C16.4804 12.1054 16.7348 12 17 12C17.2652 12 17.5196 12.1054 17.7071 12.2929C17.8946 12.4804 18 12.7348 18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11ZM20 3C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V9C21 9.26522 20.8946 9.51957 20.7071 9.70711C20.5196 9.89464 20.2652 10 20 10C19.7348 10 19.4804 9.89464 19.2929 9.70711C19.1054 9.51957 19 9.26522 19 9V6.414L10.707 14.707C10.5184 14.8892 10.2658 14.99 10.0036 14.9877C9.7414 14.9854 9.49059 14.8802 9.30518 14.6948C9.11977 14.5094 9.0146 14.2586 9.01233 13.9964C9.01005 13.7342 9.11084 13.4816 9.293 13.293L17.586 5H15C14.7348 5 14.4804 4.89464 14.2929 4.70711C14.1054 4.51957 14 4.26522 14 4C14 3.73478 14.1054 3.48043 14.2929 3.29289C14.4804 3.10536 14.7348 3 15 3H20Z" fill="black"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_417_1175">
+                                    <rect width="24" height="24" fill="white"/>
+                                    </clipPath>
+                                    </defs>
+                                    </svg>          
+                            </a>
+                        </div>
+                    @endif
+                @endforeach
+                
+                
+Route::get('/download-contact/{card}', function (\App\Models\Card $card) {
+    $user = $card->user;
+    $cardDetails = $card->cardDetails()->get(); 
+
+    $vcard = "BEGIN:VCARD\n";
+    $vcard .= "VERSION:3.0\n";
+    $vcard .= "FN:{$user->name}\n"; 
+
+    foreach ($cardDetails as $detail) {
+        if ($detail->title === 'email') {
+            $vcard .= "EMAIL:{$detail->value}\n"; 
+        } elseif ($detail->title === 'phone') {
+            $vcard .= "TEL:{$detail->value}\n"; 
+        } elseif ($detail->title === 'website') { 
+            $vcard .= "URL:{$detail->value}\n"; 
+        }
+    }
+
+    $vcard .= "END:VCARD";
+
+    return response($vcard)
+        ->header('Content-Type', 'text/vcard')
+        ->header('Content-Disposition', 'attachment; filename="contact.vcf"');
+})->name('download.contact');                

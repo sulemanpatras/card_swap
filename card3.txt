@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    width: 350px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+}
+
+.card-header {
+     /* Add background image similar to the one in the card */
+    background-size: cover;
+    background-position: center;
+    height: 100px;
+}
+
+.card-header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    margin-top: 22px;
+    z-index: 1;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-body h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.card-body p {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.contact-info {
+    margin-bottom: 20px;
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.contact-item i {
+    color: #666;
+}
+
+.contact-item span {
+    flex-grow: 1;
+    margin-left: 10px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.save-btn i {
+    margin-right: 5px;
+}
+
+.card-footer {
+    background-color: #f9f9f9;
+    padding: 15px;
+}
+
+.card-footer p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icons i {
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+.social-icons i:hover {
+    color: #000;
+}
+
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header" style="background-image: url('{{ asset('storage/' . $contact->card->cover_photo) }}'); ">
+
+            @if ($contact->card->image)
+            <img src="{{ asset('storage/' . $contact->card->image) }}" alt="Card Image" style="max-width: 300px;">
+        @endif
+        
+        </div>
+        <div class="card-body">
+            <h2>{{ $contact->user->name }}</h2>
+            <p>{{ $contact->user->job_title }} <strong>{{ $contact->user->company_name }}</strong></p>
+            <div class="contact-info">
+                @foreach($contact->card->details as $detail)
+                    <div class="contact-item">
+                        @if($detail->type == 'phone')
+                            <i class="fas fa-phone-alt"></i>
+                        @elseif($detail->type == 'email')
+                            <i class="fas fa-envelope"></i>
+                        @elseif($detail->type == 'website')
+                            <i class="fas fa-globe"></i>
+                        @endif
+                        <span>{{ $detail->value }}</span>
+                        <i class="fas fa-copy" onclick="copyToClipboard('{{ $detail->value }}')"></i>
+                    </div>
+                @endforeach
+            </div>
+            
+            <script>
+            function copyToClipboard(value) {
+                navigator.clipboard.writeText(value).then(() => {
+                    alert('Copied to clipboard: ' + value);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            }
+            </script>
+        </div>
+        
+        <div class="card-footer">
+            <p>Let's Get Social</p>
+            
+            <div class="social-icons">
+                <i class="fab fa-facebook-f"></i>
+                <i class="fab fa-x-twitter"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-linkedin"></i>
+            </div>
+            {{-- <h2>QR Code:</h2>
+            {!! $contact->qr_code_url !!} --}}
+            
+        </div>
+    </div>
+</body>
+</html>
+
